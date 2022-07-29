@@ -1,24 +1,57 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+import { Flex } from '@chakra-ui/react';
+import { Navbar } from './Components/Navbar';
+import { MovieGrid } from './Components/MovieGrid';
+import { FilterMovieList } from './types/Movies';
+
+const queryClient = new QueryClient();
+
+export interface InterfaceFilterContext {
+  filter: FilterMovieList;
+  setFilter: React.Dispatch<
+    React.SetStateAction<FilterMovieList>
+  >;
+}
+
+export const FilterContext =
+  React.createContext<InterfaceFilterContext>({
+    filter: {
+      movieName: '',
+      filterBy: '',
+      page: 1,
+    },
+    setFilter: () => {
+      null;
+    },
+  });
 
 function App() {
+  const [filter, setFilter] =
+    React.useState<FilterMovieList>({
+      movieName: '',
+      filterBy: 'top_rated',
+      page: 1,
+    });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer">
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <FilterContext.Provider
+        value={{
+          filter,
+          setFilter,
+        }}
+      >
+        <Flex direction='column' gap='10' px='3' pt='1'>
+          <Navbar />
+          <MovieGrid />
+        </Flex>
+      </FilterContext.Provider>
+    </QueryClientProvider>
   );
 }
 
